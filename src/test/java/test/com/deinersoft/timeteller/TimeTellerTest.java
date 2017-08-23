@@ -8,6 +8,10 @@ import org.junit.Test;
 
 import javax.mail.*;
 import javax.mail.Flags.Flag;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.io.InputStream;
 import java.time.Clock;
 import java.time.LocalDateTime;
 import java.util.Properties;
@@ -66,6 +70,17 @@ public class TimeTellerTest {
     }
 
     private boolean lookForTimeTellerEmail(String localTimeNowFormatted){
+        Properties localProperties = new Properties();
+        InputStream input = null;
+        try {
+            input = new FileInputStream("config.properties");
+            localProperties.load(input);
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
         boolean receivedEmail = false;
         IMAPFolder folder = null;
         Store store = null;
@@ -75,14 +90,14 @@ public class TimeTellerTest {
 
             Session session = Session.getDefaultInstance(props, null);
             store = session.getStore("imaps");
-            store.connect("imap.googlemail.com","howarddeiner.xyzzy@gmail.com", "birneraccount");
+            store.connect(localProperties.getProperty("imap.host"),localProperties.getProperty("imap.username"), localProperties.getProperty("imap.password"));
 
             folder = (IMAPFolder) store.getFolder("inbox");
             if(!folder.isOpen()) {
                 folder.open(Folder.READ_WRITE);
                 Message[] messages = folder.getMessages();
                 for (Message msg : messages) {
-                    if (msg.getSubject().equals("TimeTeller")) {
+                    if (msg.getSubject().equals(localProperties.getProperty("email.subject"))) {
                         if (((String) msg.getContent()).contains(localTimeNowFormatted)) {
                             receivedEmail = true;
                             msg.setFlag(Flag.DELETED, true);
