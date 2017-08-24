@@ -85,11 +85,11 @@ public class TimeTeller {
         }
 
         if (special) {
-            Properties localProperties = new Properties();
+            Properties configuration = new Properties();
             InputStream input = null;
             try {
                 input = new FileInputStream("config.properties");
-                localProperties.load(input);
+                configuration.load(input);
             } catch (FileNotFoundException e) {
                 e.printStackTrace();
             } catch (IOException e) {
@@ -99,25 +99,25 @@ public class TimeTeller {
 
             Properties systemProperties = System.getProperties();
 
-            systemProperties.put("mail.smtp.auth", localProperties.getProperty("smtp.authentication.enabled"));
-            systemProperties.put("mail.smtp.starttls.enable", localProperties.getProperty("smtp.starttls.enabled"));
-            systemProperties.put("mail.smtp.host", localProperties.getProperty("smtp.host.to.use"));
-            systemProperties.put("mail.smtp.port", localProperties.getProperty("smtp.port.to.use"));
+            systemProperties.put("mail.smtp.auth", configuration.getProperty("smtp.authentication.enabled"));
+            systemProperties.put("mail.smtp.starttls.enable", configuration.getProperty("smtp.starttls.enabled"));
+            systemProperties.put("mail.smtp.host", configuration.getProperty("smtp.host.to.use"));
+            systemProperties.put("mail.smtp.port", configuration.getProperty("smtp.port.to.use"));
 
-            Session session = Session.getInstance(systemProperties,
+            Session eMailSession = Session.getInstance(systemProperties,
                     new javax.mail.Authenticator() {
                         protected PasswordAuthentication getPasswordAuthentication() {
-                            return new PasswordAuthentication(localProperties.getProperty("smtp.username.to.use"), localProperties.getProperty("smtp.password.to.use"));
+                            return new PasswordAuthentication(configuration.getProperty("smtp.username.to.use"), configuration.getProperty("smtp.password.to.use"));
                         }
                     });
 
             try {
 
-                Message message = new MimeMessage(session);
-                message.setFrom(new InternetAddress(localProperties.getProperty("email.sender")));
-                message.setRecipients(Message.RecipientType.TO, InternetAddress.parse(localProperties.getProperty("email.recipient")));
-                message.setSubject(localProperties.getProperty("email.subject"));
-                message.setText(localProperties.getProperty("email.message") + " " + formattedTime);
+                Message message = new MimeMessage(eMailSession);
+                message.setFrom(new InternetAddress(configuration.getProperty("email.sender")));
+                message.setRecipients(Message.RecipientType.TO, InternetAddress.parse(configuration.getProperty("email.recipient")));
+                message.setSubject(configuration.getProperty("email.subject"));
+                message.setText(configuration.getProperty("email.message") + " " + formattedTime);
 
                 Transport.send(message);
 
