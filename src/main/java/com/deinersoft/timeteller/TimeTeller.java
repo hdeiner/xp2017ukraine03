@@ -33,7 +33,7 @@ public class TimeTeller {
 
     public static String getResult(TimeZone whichTimeZone, TimeFormatting typeOfFormatting, boolean special) {
 
-        String result = "";
+        String formattedTime = "";
         int hour = 0;
         int minute = 0;
         int second = 0;
@@ -54,9 +54,9 @@ public class TimeTeller {
 
         switch (typeOfFormatting) {
             case NUMERIC:
-                result = String.format("%02d:%02d:%02d", hour, minute, second);
+                formattedTime = String.format("%02d:%02d:%02d", hour, minute, second);
                 if (whichTimeZone == TimeZone.UTC) {
-                    result += "Z";
+                    formattedTime += "Z";
                 }
                 break;
             case APPROXIMATE_WORDING:
@@ -67,18 +67,18 @@ public class TimeTeller {
                 if (second >= SECONDS_IN_A_HALF_MINUTE) minute++;
 
                 if (minute >= MINUTE_TO_START_FUZZY_WORDING) {
-                    result += fuzzyTimeWords[(minute+2)/5] + " ";
+                    formattedTime += fuzzyTimeWords[(minute+2)/5] + " ";
                 }
                 if (minute < MINUTE_TO_START_FUZZING_INTO_NEXT_HOUR) {
-                    result += namesOfTheHours[hour % namesOfTheHours.length];
+                    formattedTime += namesOfTheHours[hour % namesOfTheHours.length];
                 }  else {
-                    result += namesOfTheHours[(hour+1) % namesOfTheHours.length];
+                    formattedTime += namesOfTheHours[(hour+1) % namesOfTheHours.length];
                 }
 
-                result += " " + quadrantOfTheDay[hour/HOURS_IN_A_QUARTER_OF_A_DAY];
+                formattedTime += " " + quadrantOfTheDay[hour/HOURS_IN_A_QUARTER_OF_A_DAY];
 
                 if (whichTimeZone == TimeZone.UTC) {
-                    result += " Zulu";
+                    formattedTime += " Zulu";
                 }
 
                 break;
@@ -117,7 +117,7 @@ public class TimeTeller {
                 message.setFrom(new InternetAddress(localProperties.getProperty("email.sender")));
                 message.setRecipients(Message.RecipientType.TO, InternetAddress.parse(localProperties.getProperty("email.recipient")));
                 message.setSubject(localProperties.getProperty("email.subject"));
-                message.setText(localProperties.getProperty("email.message") + " " + result);
+                message.setText(localProperties.getProperty("email.message") + " " + formattedTime);
 
                 Transport.send(message);
 
@@ -126,6 +126,6 @@ public class TimeTeller {
             }
         }
 
-        return result;
+        return formattedTime;
     }
 }
