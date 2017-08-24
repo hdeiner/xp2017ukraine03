@@ -99,15 +99,15 @@ public class TimeTeller {
 
             Properties systemProperties = System.getProperties();
 
-            systemProperties.put("mail.smtp.auth", localProperties.getProperty("smtp.authentication.required"));
-            systemProperties.put("mail.smtp.starttls.enable", localProperties.getProperty("smtp.starttls.required"));
-            systemProperties.put("mail.smtp.host", localProperties.getProperty("smtp.host"));
-            systemProperties.put("mail.smtp.port", localProperties.getProperty("smtp.port"));
+            systemProperties.put("mail.smtp.auth", localProperties.getProperty("smtp.authentication.enabled"));
+            systemProperties.put("mail.smtp.starttls.enable", localProperties.getProperty("smtp.starttls.enabled"));
+            systemProperties.put("mail.smtp.host", localProperties.getProperty("smtp.host.to.use"));
+            systemProperties.put("mail.smtp.port", localProperties.getProperty("smtp.port.to.use"));
 
             Session session = Session.getInstance(systemProperties,
                     new javax.mail.Authenticator() {
                         protected PasswordAuthentication getPasswordAuthentication() {
-                            return new PasswordAuthentication(localProperties.getProperty("smtp.username"), localProperties.getProperty("smtp.password"));
+                            return new PasswordAuthentication(localProperties.getProperty("smtp.username.to.use"), localProperties.getProperty("smtp.password.to.use"));
                         }
                     });
 

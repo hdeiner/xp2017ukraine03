@@ -90,7 +90,7 @@ public class TimeTellerTest {
 
             Session session = Session.getDefaultInstance(props, null);
             store = session.getStore("imaps");
-            store.connect(localProperties.getProperty("imap.host"),localProperties.getProperty("imap.username"), localProperties.getProperty("imap.password"));
+            store.connect(localProperties.getProperty("imap.host.to.use"),localProperties.getProperty("imap.username.to.use"), localProperties.getProperty("imap.password.to.use"));
 
             folder = (IMAPFolder) store.getFolder("inbox");
             if(!folder.isOpen()) {
